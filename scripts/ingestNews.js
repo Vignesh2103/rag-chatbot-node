@@ -22,4 +22,4 @@ for (const article of articles) {
   });
 }
 
-console.log("✅ News data ingested into Qdrant");
+console.log("News data ingested into Qdrant");

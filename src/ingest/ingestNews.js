@@ -21,4 +21,4 @@ for (let i = 0; i < articles.length; i++) {
   });
 }
 
-console.log("✅ News ingested");
+console.log("News ingested");

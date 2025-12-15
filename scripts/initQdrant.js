@@ -14,9 +14,9 @@ async function init() {
         distance: "Cosine"
       }
     });
-    console.log("✅ Qdrant collection `news` created");
+    console.log("Qdrant collection `news` created");
   } else {
-    console.log("ℹ️ Collection `news` already exists");
+    console.log("Collection `news` already exists");
   }
 }
 

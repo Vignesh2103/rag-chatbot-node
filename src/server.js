@@ -13,11 +13,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+
 /* ---------- ROUTES ---------- */
 app.get("/health", (req, res) => {
   res.json({ status: "OK" });
 });
 app.use("/api/session", sessionRoutes);
+
+
 
 /* ---------- SERVER & SOCKET ---------- */
 const server = http.createServer(app);
@@ -35,5 +39,5 @@ socketHandler(io);
 const PORT = config.port || 3000;
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Backend running on port ${PORT}`);
+  console.log(`Backend running on port ${PORT}`);
 });
