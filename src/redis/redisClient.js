@@ -1,27 +1,39 @@
 import { createClient } from "redis";
 import { config } from "../config/env.js";
 
-if (!config.redisUrl) {
-  throw new Error("REDIS_URL is not defined in .env");
-}
+let redisClient = null;
 
-const redisClient = createClient({
+const isTLS = config.redisUrl.startsWith("rediss://");
+
+export async function initRedis() {
+  if (!config.redisUrl) {
+    console.warn("⚠️ Redis disabled (no REDIS_URL)");
+    return null;
+  }
+
+ redisClient = createClient({
   url: config.redisUrl,
   socket: {
-    reconnectStrategy: retries => (retries > 10 ? new Error("Too many retries") : 1000)
+    tls: isTLS,
+    rejectUnauthorized: false,
+    reconnectStrategy: retries => Math.min(retries * 1000, 5000)
   }
 });
 
-redisClient.on("connect", () => console.log("Redis connected"));
-redisClient.on("ready", () => console.log("Redis ready"));
-redisClient.on("error", err => console.error("Redis Error:", err));
-redisClient.on("end", () => console.log("Redis connection closed"));
+  redisClient.on("ready", () => console.log("✅ Redis connected"));
+  redisClient.on("error", err =>
+    console.error("❌ Redis error:", err.message)
+  );
 
-try {
-  await redisClient.connect();
-} catch (err) {
-  console.error("Failed to connect to Redis:", err);
-  process.exit(1);
+  try {
+    await redisClient.connect();
+    return redisClient;
+  } catch (err) {
+    console.error("❌ Redis connection failed:", err.message);
+    return null; // DO NOT crash app
+  }
 }
 
-export default redisClient;
+export function getRedis() {
+  return redisClient;
+}
